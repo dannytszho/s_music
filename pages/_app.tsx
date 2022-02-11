@@ -34,11 +34,12 @@ const theme = extendTheme({
 });
 
 const MyApp = ({ Component, pageProps: { session, ...pageProps } }) => {
+  console.log({ Component, pageProps: { session, ...pageProps } })
   return (
     <ChakraProvider theme={theme}>
       <StoreProvider store={store}>
         <SessionProvider session={session}>
-          {Component.authPage ? (
+          {Component.auth ? (
             <Component {...pageProps} />
           ) : (
             <PlayerLayout>

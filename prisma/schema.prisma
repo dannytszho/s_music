@@ -45,9 +45,12 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   email     String     @unique
-  firstName String
-  lastName  String
-  password  String
+  firstName String?
+  lastName  String?
+  password  String?
+  name          String?
+  emailVerified DateTime? @map("email_verified")
+  image         String?
   playlists Playlist[]
   account Account[]
   session Session[]

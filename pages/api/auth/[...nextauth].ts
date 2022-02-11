@@ -21,14 +21,34 @@ export default (req, res) =>
       }),
       // ...add more providers here
     ],
+    debug: false, 
     database: process.env.DATABASE_URL,
     pages: {
-      signIn: "/signin",
+      signIn: "auth/signin",
     },
     callbacks: {
-      session: async (session, user) => {
-        session.id = user.id;
-        return Promise.resolve(session);
+      async session({ session, token, user }) {
+        // Send properties to the client, like an access_token from a provider.
+        session.accessToken = token.accessToken
+        return session
+      },
+      async jwt({ token, user, account }) {
+        // Persist the OAuth access_token to the token right after signin
+        if (account) {
+          token.accessToken = account.access_token;
+        }
+        return token;
+      },
+      async signIn({ user, account, profile, email, credentials }) {
+        const isAllowedToSignIn = true
+        if (isAllowedToSignIn) {
+          return true;
+        } else {
+          // Return false to display a default error message
+          return false;
+          // Or you can return a URL to redirect to:
+          // return '/unauthorized'
+        }
       },
     },
   });

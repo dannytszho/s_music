@@ -51,10 +51,10 @@ const musicMenu = [
 ];
 
 const playlists = new Array(30).fill(1).map((_, i) => `Playlist ${i + 1}`);
-console.log(playlists[0]);
 
 const Sidebar = () => {
   const { playlists } = usePlaylist();
+  //const playlists = [];
 
   return (
     <Box

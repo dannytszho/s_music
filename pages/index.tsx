@@ -3,10 +3,11 @@ import prisma from "../lib/prisma";
 import { Image } from "@chakra-ui/react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { useMe } from "../lib/hooks";
-import { useSession } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 
 const Home = ({ artists }) => {
   const { data: session, status } = useSession();
+  console.log(session)
 
   if (status === "authenticated") {
     return <p>Signed in as {session.user.email}</p>;
@@ -49,11 +50,20 @@ const Home = ({ artists }) => {
   );
 };
 
-export const getServerSideProps = async (req) => {
+export const getServerSideProps = async (ctx) => {
   const artists = await prisma.artist.findMany({});
+  const session = await getSession(ctx);
+
+  if (!session) {
+    return {
+      props: {},
+    };
+  }
+
+  const { user } = session;
 
   return {
-    props: { artists },
+    props: { artists, user },
   };
 };
 
