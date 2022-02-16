@@ -2,6 +2,7 @@ import GradientLayout from "../../components/gradientLayout"
 import SongTable from "../../components/songsTable"
 import { validateToken } from "../../lib/auth"
 import prisma from "../../lib/prisma"
+import { getSession } from "next-auth/react"
 
 const getBGColor = id => {
     const colors = [
@@ -33,24 +34,13 @@ const PlayList = ({ playlist }) => {
     )
 }
 
-export const getServerSideProps = async ({ query, req }) => {
-    let user
-
-    try {
-        user = validateToken(req.cookies.TRAX_ACCESS_TOKEN)
-    } catch (e) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: '/signin',
-            },
-        }
-    }
+export async const getServerSideProps(ctx) {
+    const session = await getSession(ctx)
+    console.log(session)
     
     const [playlist] = await prisma.playlist.findMany({
         where: {
-            id: +query.id,
-            userId: user.id,
+            userId: session.id,
         },
         include: {
             songs: {
@@ -67,7 +57,7 @@ export const getServerSideProps = async ({ query, req }) => {
 
     })
     return {
-        props: { playlist }
+        props: { session, playlist }
     }
 
 }

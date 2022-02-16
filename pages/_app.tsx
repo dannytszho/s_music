@@ -3,6 +3,7 @@ import { StoreProvider } from 'easy-peasy'
 import { store } from '../lib/store'
 import PlayerLayout from '../components/playerLayout'
 import 'reset-css'
+import { SessionProvider } from "next-auth/react"
 
 const theme = extendTheme({
   colors: {
@@ -32,17 +33,19 @@ const theme = extendTheme({
   },
 })
 
-const MyApp = ({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps: {session, ...pageProps }, }) => {
   return (
     <ChakraProvider theme={theme}>
       <StoreProvider store={store}>
-        {Component.authPage ? (
-          <Component {...pageProps} />
-        ) : (
-          <PlayerLayout>
+        <SessionProvider session={session}>
+          {Component.auth ? (
             <Component {...pageProps} />
-          </PlayerLayout>
-        )}
+          ) : (
+            <PlayerLayout>
+              <Component {...pageProps} />
+            </PlayerLayout>
+          )}
+        </SessionProvider>
       </StoreProvider>
     </ChakraProvider>
   )
