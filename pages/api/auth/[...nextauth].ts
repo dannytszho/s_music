@@ -2,10 +2,13 @@ import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
+import { NextApiHandler } from "next";
+
+let userAccount = null;
 
 const prisma = new PrismaClient();
 
-export default (req, res) =>
+const authHandler: NextApiHandler = (req, res) =>
     NextAuth(req, res, {
         session: {
             strategy: "jwt",
@@ -26,11 +29,18 @@ export default (req, res) =>
             signIn: '/signin_auth'
         },
         callbacks: {
-            async session({ session, token, user }) {
-                console.log({ session, token, user })
-              // Send properties to the client, like an access_token from a provider.
-              session.accessToken = token.accessToken
-              return session
+            async session({session, token}) {
+                //session.accessToken = token.accessToken;
+                
+                if (userAccount !== null)
+                {
+                    session.user = userAccount;
+                }
+                else if (typeof token !== typeof undefined)
+                {
+                    session.token = token;
+                }
+                return session;
             },
             async jwt({ token, user, account }) {
               // Persist the OAuth access_token to the token right after signin
@@ -52,3 +62,4 @@ export default (req, res) =>
             },
         }
 })
+export default authHandler;

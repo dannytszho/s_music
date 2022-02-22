@@ -2,7 +2,8 @@ import GradientLayout from "../../components/gradientLayout"
 import SongTable from "../../components/songsTable"
 import { validateToken } from "../../lib/auth"
 import prisma from "../../lib/prisma"
-import { getSession } from "next-auth/react"
+import { getSession, useSession } from "next-auth/react"
+
 
 const getBGColor = id => {
     const colors = [
@@ -19,7 +20,16 @@ const getBGColor = id => {
 }
 
 const PlayList = ({ playlist }) => {
+    const {data: session, status } = useSession()
     const color = getBGColor(playlist.id)
+
+    if (status === "loading") {
+        return "LOADING or NOT authorized"
+    }
+
+    if (!session) {
+        return "NOT authorized"
+    }
     return (
         <GradientLayout 
             color={color}

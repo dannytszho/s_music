@@ -3,20 +3,22 @@ import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 
 const Signin_auth = () => {
-  const { data: session } = useSession()
-  console.log(session)
+  const { data: session, status } = useSession()
+  console.log(status)
   const router = useRouter()
   
   useEffect(() => {
-      if(session) {
+      if(session && status !== "loading") {
           router.push('/')
       }
-  }, [session, router])
+  }, [session, status])
+
   
   return (
     <>
-        Signed in as<br />
-        <button onClick={() => signIn("github")}>Sign in</button>
+        Signed in as<br /><pre>{JSON.stringify(session, null, 4)}</pre>
+        <button onClick={() => signIn("github")}>Sign in</button><br />
+        <button onClick={()=>{signOut()}}>Sign Out</button>
     </>
 )}
 Signin_auth.auth = true
